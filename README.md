@@ -24,6 +24,7 @@ Eclipse, NetBeans, Visual Studio).
 
 Let's make this thing so we all can enjoy our favourite editors once more.
 
+
 ## Design idea
 
 _This should probably be moved to a wiki or somewhere where it's easier to
@@ -77,9 +78,9 @@ This would be represented by the scope tree below.
 
 
 This is quite a simplistic example but I hope you get the idea. When using
-structs or programming in C++ the scopes quickly becomes more complicated. Then
-scopes for the object before the cursor (if there is one) should be taken into
-account.
+structs or programming in C++ the scopes quickly becomes more complicated. In
+OO-languages scopes for the object before the cursor (if there is one) should
+be taken into account.
 
 When doing a lookup the following algorithm is used.
 
@@ -88,6 +89,34 @@ When doing a lookup the following algorithm is used.
    current scope and parent scopes of the current one.
 3. It's probably a good idea to sort the list based on what's "wanted" by the
    editor, ie. what is or returns an int.
+
+### Handling plugins
+
+This depends on the language of the implementation, but as I lean towards using
+C++ for the implementation (reasonably fast and not many strange external
+dependencies) using _dlopen()_ to load a shared library which exposes some sort
+of factory or parser-function seems like the way to go.
+
+### Parser plugin
+
+This plugin should take a file and/or filecontent as input and produce a scope
+tree. I still haven't thought of a good way to indicate included external
+files. One idea is to represent each file by a named scope and then use this
+name to find references to other files/scopes.
+
+### Scopes
+
+* Name
+	- function : The name is the name of the function
+	- file     : If this is a "top-level" scope the name represent the name of
+	             the file
+	- class/struct
+* Parent(s)
+	- function : Enclosing (function's) scope
+	- file     : Null?
+	- class/struct : Inherited classes (public/protected/private), unioned structs
+
+How to handle typedefs/inheritance? A tree representing the inherited/aliased types?
 
 
 ## Feedback
